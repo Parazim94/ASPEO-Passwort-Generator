@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Passwort Generator</title>
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css">
+
+	<!-- Fontawesome 6 Icons premium version -->
+	<script src="libs/fontawesome/js/all.min.js" type="text/javascript"></script>
+
+	<!-- Custom CSS -->
+	<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="p-2 m-2" >
+		
+		<!-- Display Generated Password and Controls -->
+		<div class="input-group d-flex align-items-top mt-2">
+			<input class="form-control" id="passwordDisplay" placeholder="Passwort" rows="1" style="resize: none;"></input>
+			<button onclick="copyPasswordToHash()" class="btn btn-outline-secondary" type="button" style="color: #104093;" data-bs-toggle="modal" data-bs-target="#hashModal">
+				Hashing
+			</button>
+		
+			<button class="btn btn-outline-secondary" type="button" id="copyBtn" style="color: #104093;">
+				<i class="fa-regular fa-copy"></i>
+			</button>
+			<button class="btn btn-outline-secondary" type="button" id="generateBtn" style="color: #104093;">
+				Generieren
+			</button>
+		</div>
+	
+		<!-- More Passwords -->
+		<div id="morePasswords" ></div>
+	
+		<!-- Reset / Alles kopieren! Buttons -->
+		<div class="d-flex justify-content-between mb-2">
+		<button class="btn btn-outline-secondary float-left" type="button" id="resetButton" style="display: none; color: #104093;">
+			Von vorne!
+		</button>
+		<button class="btn btn-outline-secondary float-right" type="button" id="copyAllButton" style="display: none; color: #104093;">
+			Alle kopieren!
+		</button>
+		</div>
+	
+		<!-- Brand Buttons und Toasts Container -->
+		<div class="mb-2" id="brandButtonsContainer">
+		</div>
+
+		<!-- Allgemeiner Toast-Container -->
+		<div class="toast-container position-fixed bottom-0 end-0 p-3">
+			<!-- General Toast Template -->
+			<div id="generalToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-body">Ein Marken-Button wurde geklickt.</div>
+			</div>
+		
+			<!-- Template für spezifische Toasts -->
+			<div id="resetToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-body">Von vorne! Button wurde geklickt.</div>
+			</div>
+		
+			<div id="copyAllToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-body">Alles kopiert!</div>
+			</div>
+		
+			<div id="copyToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-body">Passwort kopiert!</div>
+			</div>
+		
+			<div id="generateBtnToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-body">Passwort generiert!</div>
+			</div>
+		
+			<!-- Spezifische Toasts für Hashes -->
+			<div id="hashOutputToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-body">Passwort kopiert!</div>
+			</div>
+		
+			<div id="md5Toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-body">Passwort kopiert!</div>
+			</div>
+		
+			<div id="sha1Toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-body">Passwort kopiert!</div>
+			</div>
+		
+			<div id="sha2Toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-body">Passwort kopiert!</div>
+			</div>
+		
+			<div id="sha3Toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-body">Passwort kopiert!</div>
+			</div>
+		</div>
+		
+		<!-- Accordion: Password Type Choice -->
+		<div class="accordion" id="accordionPanelsStayOpenExample">
+			<div class="accordion-item">
+				<h2 class="accordion-header">
+					<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" id="langPasswordType">
+						Passworttyp
+					</button>
+				</h2>
+				<div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+					<div class="accordion-body">
+						<!-- Password Option -->
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="passwordType" value="enablePasswordCheckbox1" id="enablePasswordCheckbox" checked>
+							<label class="form-check-label" for="enablePasswordCheckbox" id="langPassword">
+								Passwort
+							</label>
+						</div>
+						<!-- Phrase Option -->
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="passwordType" value="enablePhraseCheckbox1" id="enablePhraseCheckbox">
+							<label class="form-check-label" for="enablePhraseCheckbox" id="langPhrasePassword">
+								Passwortphrase
+							</label>
+						</div>
+						<!-- Hex Option -->
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="passwordType" value="enableHexCheckbox1" id="enableHexCheckbox">
+							<label class="form-check-label" for="enableHexCheckbox" id="langHexPassword">
+								Hex-Passwort
+							</label>
+						</div>
+						<!-- Anzahl der Passwörter -->
+						<div class="row">
+							<div class="col-10 mt-1 text-start">
+								<label for="passwordAmountRange" class="form-label" id="langAmountPassword"><small>Anzahl der Passwörter</small></label>
+								<input type="range" class="form-range" min="1" max="50" value="1" id="passwordAmountRange">
+							</div>
+							<div class="col-2 mt-4 text-end">
+								<input type="number" min="1" max="50" value="1" id="passwordAmountNumber">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+						
+		<!-- Accordion: Character Types -->
+		<div class="accordion-item d-none" id="panelsStayOpen-collapseTwo_test">
+			<h2 class="accordion-header">
+				<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" id="langCharaTypes">
+					Zeichentypen
+				</button>
+			</h2>
+			<div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
+				<div class="accordion-body">
+					<!-- Password Length Control -->
+					<div class="row">
+						<div class="col-10 mt-1 text-start">
+							<label for="characterAmountRange" class="form-label" id="langPasswordLength"><small>Passwortlänge</small></label>
+							<input type="range" class="form-range" min="1" max="50" value="10" id="characterAmountRange">
+						</div>
+						<div class="col-2 mt-4 text-end">
+							<input type="number" min="1" max="50" value="10" id="characterAmountNumber">
+						</div>
+					</div>
+		
+					<!-- Include Uppercase Characters Option -->
+					<div class="row">
+						<div class="col-12 mt-1 text-start">
+							<label for="includeUppercase" class="form-label" id="langUseUppercase"><small>verwende Großbuchstaben, auszuschließende Buchstaben</small></label>
+							<div class="input-group mb-3">
+								<div class="input-group-text">
+									<input class="form-check-input mt-0" type="checkbox" id="includeUppercase" checked>
+								</div>
+								<input type="text" class="form-control" id="excludeUppercase" placeholder="A, B, C, .. Z">
+							</div>
+						</div>
+					</div>
+		
+					<!-- Include Lowercase Characters Option -->
+					<div class="row">
+						<div class="col-12 mt-1 text-start">
+							<label for="includeLowercase" class="form-label" id="langUseLowercase"><small>verwende Kleinbuchstaben, auszuschließende Buchstaben</small></label>
+							<div class="input-group mb-3">
+								<div class="input-group-text">
+									<input class="form-check-input mt-0" type="checkbox" id="includeLowercase" checked>
+								</div>
+								<input type="text" class="form-control" id="excludeLowercase" placeholder="a, b, c, .. z">
+							</div>
+						</div>
+					</div>
+		
+					<!-- Include Numbers Option -->
+					<div class="row">
+						<div class="col-12 mt-1 text-start">
+							<label for="includeNumbers" class="form-label" id="langUseNumbers"><small>verwende Ziffern, auszuschließende Ziffern</small></label>
+							<div class="input-group mb-3">
+								<div class="input-group-text">
+									<input class="form-check-input mt-0" type="checkbox" id="includeNumbers" checked>
+								</div>
+								<input type="text" class="form-control" id="excludeNumbers" placeholder="0, 1, 2, .. 9">
+							</div>
+						</div>
+					</div>
+		
+					<!-- Include Symbols Option -->
+					<div class="row">
+						<div class="col-12 mt-1 text-start">
+							<label for="includeSymbols" class="form-label" id="langUseSymbols"><small>verwende Symbole, auszuschließende Symbole</small></label>
+							<div class="input-group mb-3">
+								<div class="input-group-text">
+									<input class="form-check-input mt-0" type="checkbox" id="includeSymbols" checked>
+								</div>
+								<input type="text" class="form-control" id="excludeSymbols" placeholder="&, @, #, etc...">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Accordion Item: Minimum Count -->
+		<div class="accordion-item d-none" id="panelsStayOpen-collapseThree_test" ">
+			<!-- Accordion Header -->
+			<h2 class="accordion-header">
+				<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree" id="langMin">
+					Mindestanzahl
+				</button>
+			</h2>
+		
+			<!-- Accordion Body -->
+			<div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
+				<div class="accordion-body">
+					<!-- Minimum Uppercase Letters Control -->
+					<label id="langMinUppercase"><small>Mindestanzahl Großbuchstaben</small></label>
+					<div class="input-group mb-2">
+						<input type="number" class="form-control" id="minUppercase" placeholder="0" readonly>
+						<button class="btn btn-outline-secondary" type="button" id="btn-minus-uppercase" style="color: #1955be;">
+							<i class="fa-solid fa-minus"></i>
+						</button>
+						<button class="btn btn-outline-secondary" type="button" id="btn-plus-uppercase" style="color: #104093;">
+							<i class="fa-solid fa-plus"></i>
+						</button>
+					</div>
+		
+					<!-- Minimum Lowercase Letters Control -->
+					<label id="langMinLowercase"><small>Mindestanzahl Kleinbuchstaben</small></label>
+					<div class="input-group mb-2">
+						<input type="number" class="form-control" id="minLowercase" placeholder="0" readonly>
+						<button class="btn btn-outline-secondary" type="button" id="btn-minus-lowercase" style="color: #1955be;">
+							<i class="fa-solid fa-minus"></i>
+						</button>
+						<button class="btn btn-outline-secondary" type="button" id="btn-plus-lowercase" style="color: #104093;">
+							<i class="fa-solid fa-plus"></i>
+						</button>
+					</div>
+		
+					<!-- Minimum Numbers Control -->
+					<label id="langMinNumbers"><small>Mindestanzahl Ziffern</small></label>
+					<div class="input-group mb-2">
+						<input type="number" class="form-control" id="minNumbers" placeholder="0" readonly>
+						<button class="btn btn-outline-secondary" type="button" id="btn-minus-number" style="color: #1955be;">
+							<i class="fa-solid fa-minus"></i>
+						</button>
+						<button class="btn btn-outline-secondary" type="button" id="btn-plus-number" style="color: #104093;">
+							<i class="fa-solid fa-plus"></i>
+						</button>
+					</div>
+		
+					<!-- Minimum Symbols Control -->
+					<label id="langMinSymbols"><small>Mindestanzahl Symbole</small></label>
+					<div class="input-group mb-2">
+						<input type="number" class="form-control" id="minSymbols" placeholder="0" readonly>
+						<button class="btn btn-outline-secondary" type="button" id="btn-minus-symbol" style="color: #1955be;">
+							<i class="fa-solid fa-minus"></i>
+						</button>
+						<button class="btn btn-outline-secondary" type="button" id="btn-plus-symbol" style="color: #104093;">
+							<i class="fa-solid fa-plus"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	
+		<!-- Accordion Item: Password Phrase -->
+		<div class="accordion-item d-none" id="panelsStayOpen-collapseFour_test">
+			<!-- Accordion Header -->
+			<h2 class="accordion-header">
+				<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="false" aria-controls="panelsStayOpen-collapseFour" id="langPasswordPhrase">
+					Passwortphrase
+				</button>
+			</h2>
+		
+			<!-- Accordion Body -->
+			<div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse">
+				<div class="accordion-body">
+					
+					<!-- Word Count Control -->
+					<label id="langAmountWords"><small>Wortanzahl</small></label>
+					<div class="input-group mb-2">
+						<input type="number" class="form-control" id="wordCount" placeholder="3" readonly>
+						<button class="btn btn-outline-secondary" type="button" id="btn-minus-wordCount" style="color: #1955be;">
+							<i class="fa-solid fa-minus"></i>
+						</button>
+						<button class="btn btn-outline-secondary" type="button" id="btn-plus-wordCount" style="color: #104093;">
+							<i class="fa-solid fa-plus"></i>
+						</button>
+					</div>
+		
+					<!-- Delimiter Control -->
+					<label id="langDelimiter"><small>Trennzeichen</small></label>
+					<div class="input-group mb-2">
+						<input type="text" class="form-control" id="delimiter" placeholder="-">
+					</div>
+				</div>
+			</div>
+		</div>
+	
+	    <!-- footer -->
+		<div class="border border-dark fixed-bottom text-white" style="background-color: #373f43">
+			<div class="d-flex justify-content-between align-items-center">
+				<a class="ms-4" style="color: white;" href="https://www.aspeo.de/">Aspeo | Röder 2023</a>
+				<div class="d-flex justify-content-end">
+					<button type="button" class="btn btn-outline-white" data-bs-toggle="modal" data-bs-target="#exampleModal" style="color: white; border:2px solid white; padding: 6px" id="langGuidance">Anleitung</button>
+						<div class="btn-group dropup">
+							<button class="btn btn-border-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" type="button" id="switchLangBtn" style="color: white;">Sprache wechseln</button>
+								<ul class="dropdown-menu">
+									<div class="text-center">
+										<li><a class="dropdown-item text-center" href="#" data-lang="de">Deutsch <i class="fa-solid fa-flag"></i> </a></li>
+									</div>
+									<div class="text-center">
+										<li><a class="dropdown-item text-center" href="#" data-lang="en">English <i class="fa-solid fa-flag"></i></a></li>
+									</div>
+									<div class="text-center"
+										<li><a class="dropdown-item text-center" href="#" data-lang="fr">French <i class="fa-solid fa-flag"></i></a></li>
+									</div>
+									<div class="text-center"
+										<li><a class="dropdown-item text-center" href="#" data-lang="it">Italian <i class="fa-solid fa-flag"></i></a></li>
+									</div>
+								</ul>
+						</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal -->
+		<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-xl">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Anleitung für den Passwort-Generator</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			  </div>
+			  <div class="modal-body" id="langGuidanceText">
+				<p>Willkommen beim Aspeo | Röder Passwort-Generator! Unser Tool ist darauf ausgelegt, Ihnen bei der Erstellung sicherer Passwörter für verschiedene Online-Plattformen wie Google, Spotify und Facebook zu helfen. Hier erklären wir, wie Sie die spezifischen Mindestanforderungen dieser Dienste erfüllen können und welche Passworttypen zur Verfügung stehen.</p>
+				
+				<h6>Auswahl des Passworttyps</h6>
+				<ul>
+				  <li><b>Standard-Passwort:</b> Ein zufälliges Passwort, das eine Mischung aus Buchstaben, Zahlen und Sonderzeichen enthält. Ideal für die meisten Online-Konten.</li>
+				  <li><b>Passphrase:</b> Eine Reihe von Wörtern, die zusammen ein längeres Passwort bilden. Diese sind oft einfacher zu merken und bieten dennoch hohe Sicherheit.</li>
+				  <li><b>Hex-Passwort:</b> Ein Passwort, das ausschließlich aus hexadezimalen Zeichen (0-9 und A-F) besteht. Nützlich für spezielle technische Anforderungen.</li>
+				</ul>
+				
+				<h6>Anpassen des Passworts an Plattform-Spezifikationen</h6>
+				<p>Für verschiedene Online-Dienste können Sie die Mindestanforderungen direkt über spezielle Buttons einstellen:</p>
+				<ul>
+				  <li><b>Google-Button:</b> Setzt die Anforderungen gemäß den Google-Richtlinien.</li>
+				  <li><b>Spotify-Button:</b> Passt die Passworteinstellungen an die Richtlinien von Spotify an.</li>
+				  <li><b>Facebook-Button:</b> Konfiguriert das Passwort so, dass es den Sicherheitsstandards von Facebook entspricht.</li>
+				</ul>
+				
+				<h6>Generierung und Verwendung Ihres Passworts</h6>
+				<ol>
+				  <li>Wählen Sie den gewünschten Passworttyp und die Plattform-Anforderungen.</li>
+				  <li>Passen Sie die Einstellungen nach Bedarf weiter an (z.B. Länge, Einbeziehung von Sonderzeichen).</li>
+				  <li>Klicken Sie auf "Generieren", um Ihr Passwort zu erstellen.</li>
+				  <li>Nutzen Sie die Kopierfunktion, um das Passwort sicher zu übernehmen.</li>
+				</ol>
+				
+				<h6>Hashing-Option für erweiterte Sicherheit</h6>
+				<p><b>Neu! Hashing-Button:</b> Erstellen Sie Hash-Versionen Ihrer Passwörter für zusätzliche Sicherheit. Wählen Sie zwischen verschiedenen Hash-Formaten wie MD5, SHA1, SHA2 und SHA3. Diese Funktion ist ideal für Benutzer, die eine zusätzliche Sicherheitsebene wünschen, indem sie das generierte Passwort in einen Hash umwandeln, bevor es verwendet wird.</p>
+				
+				<p><b>Hinweis für Nutzer:</b> Für optimale Sicherheit empfehlen wir, für jedes Konto ein einzigartiges Passwort zu verwenden und regelmäßige Änderungen vorzunehmen, um Ihre Online-Präsenz zu schützen.</p>
+			  </div>
+			</div>
+		  </div>
+		</div>
+		
+		<!-- Modal Hashing -->
+		<div class="modal fade" id="hashModal" tabindex="-1" aria-labelledby="hashModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-xl">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="hashModalLabel">Hashing</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="container">
+							<!-- Salts Eingabefelder mit Checkboxen -->
+							<div class="row mb-2">
+								<!-- SALT Input 1 mit Checkbox -->
+								<div class="col input-group">
+									<label id="saltBefore" for="saltInput1" class="input-group-text">SALT (davor)</label>
+									<input type="text" class="form-control" id="saltInput1" placeholder="test_">
+									<div class="input-group-text">
+										<input class="form-check-input mt-0" type="checkbox" id="saltCheck1" onchange="updateHashOutput()">
+									</div>
+								</div>
+								
+								<!-- SALT Input 2 mit Checkbox -->
+								<div class="col input-group">
+									<label id="saltAfter" for="saltInput2" class="input-group-text">SALT (dahinter)</label>
+									<input type="text" class="form-control" id="saltInput2" placeholder="_test">
+									<div class="input-group-text">
+										<input class="form-check-input mt-0" type="checkbox" id="saltCheck2" onchange="updateHashOutput()">
+									</div>
+								</div>
+							</div>
+		
+							<!-- Hash Output Bereich -->
+							<div class="row mb-4 mt-3">
+								<div class="col">
+									<label id="PasswordHashTitle" for="hashOutput">Passwort</label>
+									<div class="input-group">
+										<input type="text" class="form-control form-control-lg" id="hashOutput" placeholder="test_Password_test">
+										<button class="btn btn-outline-secondary" type="button" id="copyHashOutput" style="color: #104093;">
+											<i class="fa-regular fa-copy"></i> 
+										</button>
+									</div>
+								</div>
+							</div>
+		
+							<!-- MD5 Hash Anzeige -->
+							<div class="row mb-3 align-items-center">
+								<div class="col-auto">
+									<label for="md5" class="col-form-label">MD5:</label>
+								</div>
+								<div class="col">
+									<div class="input-group">
+										<input type="text" class="form-control" id="md5" placeholder="MD5 hash" readonly>
+										<button class="btn btn-outline-secondary" type="button" id="copyMd5" style="color: #104093;">
+											<i class="fa-regular fa-copy"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+		
+							<!-- SHA1 Hash Anzeige -->
+							<div class="row mb-3 align-items-center">
+								<div class="col-auto">
+									<label for="sha1" class="col-form-label">SHA1:</label>
+								</div>
+								<div class="col">
+									<div class="input-group">
+										<input type="text" class="form-control" id="sha1" placeholder="SHA1 hash" readonly>
+										<button class="btn btn-outline-secondary" type="button" id="copySha1" style="color: #104093;">
+											<i class="fa-regular fa-copy"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+							
+							<!-- SHA2 Hash Anzeige -->
+							<div class="row mb-3 align-items-center">
+								<div class="col-auto">
+									<label for="sha2" class="col-form-label">SHA2:</label>
+								</div>
+								<div class="col">
+									<div class="input-group">
+										<input type="text" class="form-control" id="sha2" placeholder="SHA2 hash" readonly>
+										<button class="btn btn-outline-secondary" type="button" id="copySha2" style="color: #104093;">
+											<i class="fa-regular fa-copy"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+		
+				 			<!-- SHA3 Hash Anzeige -->
+				 			<div class="row mb-3 align-items-center">
+					 			<div class="col-auto">
+						 			<label for="sha3" class="col-form-label">SHA3:</label>
+					 			</div>
+					 			<div class="col">
+						 			<div class="input-group">
+							 			<input type="text" class="form-control" id="sha3" placeholder="SHA3 hash" readonly>
+							 			<button class="btn btn-outline-secondary" type="button" id="copySha3" style="color: #104093;">
+								 			<i class="fa-regular fa-copy"></i>
+							 			</button>
+						 			</div>
+					 			</div>
+				 			</div>
+					 
+					</div>
+			    </div>
+			</div>
+		</div>	
+		
+		<!-- JavaScript Libraries and App Script -->
+		<script src="libs/bootstrap/popper.min.js" type="text/javascript"></script>
+		<script src="libs/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+		<script src="app.js" defer></script>
+		<script src="libs/crypto.js"></script>
+	
+</body>
+</html>
